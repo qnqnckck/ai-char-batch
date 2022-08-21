@@ -1,6 +1,6 @@
 package com.soksok.aichargebatch.address.repository;
 
-import com.soksok.aichargebatch.address.dto.AiOrders;
+import com.soksok.aichargebatch.address.entity.AiOrders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

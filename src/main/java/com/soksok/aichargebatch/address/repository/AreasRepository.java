@@ -1,11 +1,8 @@
 package com.soksok.aichargebatch.address.repository;
 
-import com.soksok.aichargebatch.address.dto.Areas;
+import com.soksok.aichargebatch.address.entity.Areas;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public interface AreasRepository extends JpaRepository<Areas, String> {

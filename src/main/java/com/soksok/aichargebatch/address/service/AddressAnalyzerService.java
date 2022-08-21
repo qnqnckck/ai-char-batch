@@ -1,8 +1,8 @@
 package com.soksok.aichargebatch.address.service;
 
-import com.soksok.aichargebatch.address.dto.AiOrders;
-import com.soksok.aichargebatch.address.dto.Areas;
-import com.soksok.aichargebatch.address.dto.Orders;
+import com.soksok.aichargebatch.address.entity.AiOrders;
+import com.soksok.aichargebatch.address.entity.Areas;
+import com.soksok.aichargebatch.address.entity.Orders;
 import com.soksok.aichargebatch.address.repository.AiOrdersRepository;
 import com.soksok.aichargebatch.address.repository.AreasRepository;
 import com.soksok.aichargebatch.address.repository.OrdersRepository;
@@ -36,7 +36,7 @@ public class AddressAnalyzerService {
         List<String> destinationAreaIds = new ArrayList<>();
 
         for (int i = 0; i < orders.size(); i++) {
-            System.out.println(i);
+//            System.out.println(i);
             String target = orders.get(i).getStartAreaOldAddress();
             if (target != null) {
                 startAreaIds = getAreaIds(target);
