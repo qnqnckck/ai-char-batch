@@ -6,8 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface OrdersRepository extends JpaRepository<Orders, LocalDateTime> {
-    List<Orders> findByReceiveDate(LocalDateTime receiveDateTime);
+public interface OrdersRepository extends JpaRepository<Orders, String> {
+
+    List<Orders> findAll();
+
+//    Optional<List<Orders>> findByOrderId(String orderId);
+
+//    List<Orders> findByReceiveDate(LocalDateTime receiveDateTime);
 }

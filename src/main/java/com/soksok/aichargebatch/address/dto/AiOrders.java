@@ -1,24 +1,22 @@
 package com.soksok.aichargebatch.address.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 @Entity
-@Table(name = "ORDERS")
+@Table(name = "AI_ORDERS")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Orders {
+public class AiOrders {
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="ID")
+    Long id;
     @Column(name = "ORDER_ID")
     String orderId;
     @Column(name = "ORDER_NO")
@@ -35,6 +33,8 @@ public class Orders {
     int status;
     @Column(name = "START_AREA_NAME")
     String startAreaName;
+    @Column(name = "START_AREA_ID")
+    String startAreaId;
     @Column(name = "START_AREA_OLD_ADDRESS")
     String startAreaOldAddress;
     @Column(name = "START_AREA_ROAD_ADDRESS")
@@ -45,6 +45,8 @@ public class Orders {
     double startAreaLong;
     @Column(name = "DESTINATION_AREA_NAME")
     String destinationAreaName;
+    @Column(name = "DESTINATION_AREA_ID")
+    String destinationAreaId;
     @Column(name = "DESTINATION_AREA_OLD_ADDRESS")
     String destinationAreaOldAddress;
     @Column(name = "DESTINATION_AREA_ROAD_ADDRESS")
@@ -123,5 +125,64 @@ public class Orders {
     String driverProfileUrl;
     @Column(name = "CUSTOMER_CONFIRMED")
     int customerConfirmed;
+
+    public static AiOrders create(Orders orders, String startAreaId,  String destinationAreaId){
+        return AiOrders.builder()
+                .orderId(orders.orderId)
+                .orderNo(orders.orderNo)
+                .receiveCompanyId(orders.receiveCompanyId)
+                .customerId(orders.customerId)
+                .customerName(orders.customerName)
+                .customerPhoneNumber(orders.customerPhoneNumber)
+                .status(orders.status)
+                .startAreaName(orders.startAreaName)
+                .startAreaId(startAreaId)
+                .startAreaOldAddress(orders.startAreaOldAddress)
+                .startAreaRoadAddress(orders.startAreaRoadAddress)
+                .startAreaLat(orders.startAreaLat)
+                .startAreaLong(orders.startAreaLong)
+                .destinationAreaName(orders.destinationAreaName)
+                .destinationAreaId(destinationAreaId)
+                .destinationAreaOldAddress(orders.destinationAreaOldAddress)
+                .destinationAreaRoadAddress(orders.destinationAreaRoadAddress)
+                .destinationAreaLat(orders.destinationAreaLat)
+                .destinationAreaLong(orders.destinationAreaLong)
+                .selectedRecommendChargeNo(orders.selectedRecommendChargeNo)
+                .chargeType(orders.chargeType)
+                .standardCharge(orders.standardCharge)
+                .passCharge(orders.passCharge)
+                .extraCharge(orders.extraCharge)
+                .waitingCharge(orders.waitingCharge)
+                .point(orders.point)
+                .creditCardId(orders.creditCardId)
+                .driverGender(orders.driverGender)
+                .processCompanyId(orders.processCompanyId)
+                .driverId(orders.driverId)
+                .receiveDate(orders.receiveDate)
+                .assignmentTime(orders.assignmentTime)
+                .arrivalTime(orders.arrivalTime)
+                .drivingStartTime(orders.drivingStartTime)
+                .completionTime(orders.completionTime)
+                .insuranceType(orders.insuranceType)
+                .insuranceCompany(orders.insuranceCompany)
+                .insuranceNumber(orders.insuranceNumber)
+                .insuranceStartDate(orders.insuranceStartDate)
+                .insuranceEndDate(orders.insuranceEndDate)
+                .paybackRate(orders.paybackRate)
+                .notDisplayOnCustomer(orders.notDisplayOnCustomer)
+                .standardChargeType(orders.standardChargeType)
+                .parentOrderId(orders.parentOrderId)
+                .transferId(orders.transferId)
+                .insurancePremium(orders.insurancePremium)
+                .customerSafePhoneNumber(orders.customerSafePhoneNumber)
+                .driverSafePhoneNumber(orders.driverSafePhoneNumber)
+                .driverName(orders.driverName)
+                .driverPhoneNumber(orders.driverPhoneNumber)
+                .memo(orders.memo)
+                .requestAssignmentTime(orders.requestAssignmentTime)
+                .driverProfileUrl(orders.driverProfileUrl)
+                .customerConfirmed(orders.customerConfirmed)
+                .build();
+    }
 
 }
