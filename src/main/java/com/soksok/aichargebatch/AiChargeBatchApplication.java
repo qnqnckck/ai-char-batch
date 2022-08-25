@@ -1,6 +1,7 @@
 package com.soksok.aichargebatch;
 
 import com.soksok.aichargebatch.address.service.AddressAnalyzerService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,6 +24,14 @@ public class AiChargeBatchApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        addressAnalyzerService.parser();
+        String jobName = System.getProperty("JOB_NAME");
+
+        if(StringUtils.equals(jobName,"AI_STEP1")){
+            boolean isAll = Boolean.getBoolean(System.getProperty("IS_ALL"));
+            String specificDay=System.getProperty("SPECIFIC_DAY");
+            addressAnalyzerService.parser(isAll, specificDay);
+        }else if(StringUtils.equals(jobName,"AI_STEP2")){
+            addressAnalyzerService.tidyUp();
+        }
     }
 }

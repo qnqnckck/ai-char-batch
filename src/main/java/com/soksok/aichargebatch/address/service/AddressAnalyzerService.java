@@ -7,9 +7,14 @@ import com.soksok.aichargebatch.address.repository.AiOrdersRepository;
 import com.soksok.aichargebatch.address.repository.AreasRepository;
 import com.soksok.aichargebatch.address.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -25,11 +30,29 @@ public class AddressAnalyzerService {
     private static final String DELIMITER_SPACE = " ";
 
     @Transactional
-    public void parser() {
+    public void parser(boolean isAll, String specificDay) {
         setAreaList();
+        List<Orders> orders = null;
 
+        if (isAll) {
+            DateTime endTime;
+            endTime = DateTime.now().withTimeAtStartOfDay();
+            orders = ordersRepository.findByAssignmentTime(endTime);
+        } else {
+            DateTime startTime;
+            DateTime endTime;
+            // 설정이되어 있지 않다면 이전날 기준
+            if (specificDay.equals("0")) {
+                startTime = DateTime.now().minusDays(1).withTimeAtStartOfDay();
+                endTime = DateTime.now().withTimeAtStartOfDay();
+            } else {
+                String pattern = "YYYYMMDD";
+                startTime = DateTime.parse(specificDay, DateTimeFormat.forPattern(pattern));
+                endTime = startTime.toDateTime().plusDays(1);
+            }
+            orders = ordersRepository.findByAssignmentTime(startTime, endTime);
+        }
 
-        List<Orders> orders = ordersRepository.findAll();
 
         List<String> startAreaIds = new ArrayList<>();
         List<String> passAreaIds = new ArrayList<>();
@@ -63,7 +86,7 @@ public class AddressAnalyzerService {
         List<Areas> areas = areasRepository.findAll();
         String key = null;
         for (int i = 0; i < areas.size(); i++) {
-            key =areas.get(i).getName1() + areas.get(i).getName2() + areas.get(i).getName3() + areas.get(i).getName4() + areas.get(i).getName5();
+            key = areas.get(i).getName1() + areas.get(i).getName2() + areas.get(i).getName3() + areas.get(i).getName4() + areas.get(i).getName5();
             areaList.put(key, areas.get(i).getAreaId());
         }
         ;
@@ -122,7 +145,7 @@ public class AddressAnalyzerService {
                 switch (j) {
                     case 1:
                         areaId = getAreaId(split[0], split[1], null, null, null);
-                       break;
+                        break;
                     case 2:
                         areaId = getAreaId(split[0], split[1], split[2], null, null);
                         break;
@@ -134,7 +157,7 @@ public class AddressAnalyzerService {
                         break;
                 }
 
-                if(areaId != null){
+                if (areaId != null) {
                     ret.add(areaId);
                 }
             }
@@ -143,8 +166,11 @@ public class AddressAnalyzerService {
     }
 
     public String getAreaId(String name1, String name2, String name3, String name4, String name5) {
-        String key = name1+name2+name3+name4+name5;
+        String key = name1 + name2 + name3 + name4 + name5;
         return areaList.get(key);
     }
 
+    public void tidyUp() {
+        //AiOrders
+    }
 }
