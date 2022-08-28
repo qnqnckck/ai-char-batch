@@ -63,8 +63,12 @@ public class AiOrders {
     LocalDateTime completionTime;
     @Column(name = "REQUEST_ASSIGNMENT_TIME")
     LocalDateTime requestAssignmentTime;
+    @Column(name = "ASSIGNMENT_WAITING_TIME")
+    Integer assignmentWaitingTime;
+    @Column(name = "REQUEST_ASSIGNMENT_TIME_HOUR")
+    Integer requestAssignmentTimeHour;
 
-    public static AiOrders create(Orders orders, String startAreaId,  String destinationAreaId){
+    public static AiOrders create(Orders orders, String startAreaId,  String destinationAreaId, Integer assignmentWaitingTime, Integer requestAssignmentTimeHour){
         return AiOrders.builder()
                 .orderId(orders.orderId)
                 .startAreaName(orders.startAreaName)
@@ -89,6 +93,8 @@ public class AiOrders {
                 .drivingStartTime(orders.drivingStartTime)
                 .completionTime(orders.completionTime)
                 .requestAssignmentTime(orders.requestAssignmentTime)
+                .assignmentWaitingTime(assignmentWaitingTime)
+                .requestAssignmentTimeHour(requestAssignmentTimeHour)
                 .build();
     }
 

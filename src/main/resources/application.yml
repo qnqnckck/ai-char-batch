@@ -3,13 +3,13 @@ spring:
     name: ${APPLICATION_NAME:AI-CHARGE-BATCH}
   datasource:
     url: "jdbc:mysql://127.0.0.1:3306/soksok"
-    #url: "jdbc:mysql://soksok-aurora-db-serverless.cluster-ctuthbmrxl9o.ap-northeast-2.rds.amazonaws.com:3306/soksok"
+#    url: "jdbc:mysql://soksok-aurora-db-serverless.cluster-ctuthbmrxl9o.ap-northeast-2.rds.amazonaws.com:3306/soksok"
     username: "soksok"
     password: "handle5565!!"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
-    show-sql: false
+    show-sql: true
 
     hibernate:
       ddl-auto: none
@@ -18,7 +18,7 @@ spring:
 
     properties:
       hibernate:
-        show_sql: false
+        show_sql: true
         format_sql: true
         jdbc:
           batch_size: 100

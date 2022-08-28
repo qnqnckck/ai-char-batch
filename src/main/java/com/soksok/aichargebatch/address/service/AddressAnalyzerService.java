@@ -1,20 +1,16 @@
 package com.soksok.aichargebatch.address.service;
 
-import com.soksok.aichargebatch.address.entity.AiOrders;
-import com.soksok.aichargebatch.address.entity.Areas;
-import com.soksok.aichargebatch.address.entity.Orders;
-import com.soksok.aichargebatch.address.repository.AiOrdersRepository;
-import com.soksok.aichargebatch.address.repository.AreasRepository;
-import com.soksok.aichargebatch.address.repository.OrdersRepository;
+import com.soksok.aichargebatch.address.entity.*;
+import com.soksok.aichargebatch.address.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -27,6 +23,10 @@ public class AddressAnalyzerService {
     private final OrdersRepository ordersRepository;
     private final AiOrdersRepository aiOrdersRepository;
 
+    private final AiChargesRepository aiChargesRepository;
+
+    private final AiChargesHistoryRepository aiChargesHistoryRepository;
+
     private static final String DELIMITER_SPACE = " ";
 
     @Transactional
@@ -35,31 +35,32 @@ public class AddressAnalyzerService {
         List<Orders> orders = null;
 
         if (isAll) {
-            DateTime endTime;
-            endTime = DateTime.now().withTimeAtStartOfDay();
+            LocalDateTime endTime;
+            endTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
             orders = ordersRepository.findByAssignmentTime(endTime);
         } else {
-            DateTime startTime;
-            DateTime endTime;
+
+            LocalDateTime startTime;
+            LocalDateTime endTime;
             // 설정이되어 있지 않다면 이전날 기준
             if (specificDay.equals("0")) {
-                startTime = DateTime.now().minusDays(1).withTimeAtStartOfDay();
-                endTime = DateTime.now().withTimeAtStartOfDay();
+
+                startTime = LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.DAYS);
+                ;
+                endTime = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
             } else {
                 String pattern = "YYYYMMDD";
-                startTime = DateTime.parse(specificDay, DateTimeFormat.forPattern(pattern));
-                endTime = startTime.toDateTime().plusDays(1);
+                startTime = LocalDateTime.parse(specificDay, DateTimeFormatter.ofPattern(pattern));
+                endTime = startTime.plusDays(1);
             }
             orders = ordersRepository.findByAssignmentTime(startTime, endTime);
         }
-
 
         List<String> startAreaIds = new ArrayList<>();
         List<String> passAreaIds = new ArrayList<>();
         List<String> destinationAreaIds = new ArrayList<>();
 
         for (int i = 0; i < orders.size(); i++) {
-//            System.out.println(i);
             String target = orders.get(i).getStartAreaOldAddress();
             if (target != null) {
                 startAreaIds = getAreaIds(target);
@@ -72,7 +73,13 @@ public class AddressAnalyzerService {
 
             for (int l = 0; l < startAreaIds.size(); l++) {
                 for (int k = 0; k < destinationAreaIds.size(); k++) {
-                    AiOrders aiOrders = AiOrders.create(orders.get(i), startAreaIds.get(l), destinationAreaIds.get(k));
+                    AiOrders aiOrders = AiOrders.create(
+                            orders.get(i),
+                            startAreaIds.get(l),
+                            destinationAreaIds.get(k),
+                            getAssignmentWatingTime(orders.get(i).getRequestAssignmentTime(), orders.get(i).getAssignmentTime()),
+                            Integer.parseInt(orders.get(i).getRequestAssignmentTime().format(DateTimeFormatter.ofPattern("HH")))
+                    );
                     aiOrdersRepository.save(aiOrders);
                 }
             }
@@ -80,6 +87,11 @@ public class AddressAnalyzerService {
             passAreaIds.clear();
             destinationAreaIds.clear();
         }
+    }
+
+    private int getAssignmentWatingTime(LocalDateTime requestAssignmentTime, LocalDateTime assignmentTime) {
+        Duration duration = Duration.between(requestAssignmentTime, assignmentTime);
+        return (int) (duration.getSeconds() / 60) + 1;
     }
 
     private void setAreaList() {
@@ -172,5 +184,17 @@ public class AddressAnalyzerService {
 
     public void tidyUp() {
         //AiOrders
+        LocalDate createdDate;
+        createdDate = LocalDate.now().minusDays(1);
+
+        List<AiCharges> aiChargesList = aiChargesRepository.findByCreatedDate(createdDate);
+        for(int i=0; i<aiChargesList.size(); i++){
+            AiCharges aiCharges = aiChargesList.get(i);
+
+            AiChargesHistory aiChargesHistory = AiChargesHistory.create(aiCharges);
+            aiChargesHistoryRepository.save(aiChargesHistory);
+        }
+
+        aiChargesRepository.deleteAll(aiChargesList);
     }
 }

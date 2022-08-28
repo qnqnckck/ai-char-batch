@@ -27,7 +27,7 @@ public class AiChargeBatchApplication implements CommandLineRunner {
         String jobName = System.getProperty("JOB_NAME");
 
         if(StringUtils.equals(jobName,"AI_STEP1")){
-            boolean isAll = Boolean.getBoolean(System.getProperty("IS_ALL"));
+            boolean isAll = Boolean.parseBoolean(System.getProperty("IS_ALL"));
             String specificDay=System.getProperty("SPECIFIC_DAY");
             addressAnalyzerService.parser(isAll, specificDay);
         }else if(StringUtils.equals(jobName,"AI_STEP2")){
