@@ -2,9 +2,9 @@ spring:
   application:
     name: ${APPLICATION_NAME:AI-CHARGE-BATCH}
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/soksok"
-#    url: "jdbc:mysql://soksok-aurora-db-serverless.cluster-ctuthbmrxl9o.ap-northeast-2.rds.amazonaws.com:3306/soksok"
-    username: "soksok"
+#    url: "jdbc:mysql://127.0.0.1:3306/soksok"
+    url: "jdbc:mysql://soksok-db.cluster-cyr1npf6f1e2.ap-northeast-2.rds.amazonaws.com:3306/soksok_dev"
+    username: "soksok_dev"
     password: "handle5565!!"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
